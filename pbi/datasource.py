@@ -18,7 +18,7 @@ class Datasource:
         self.gateway_id = datasource['gatewayId']
         self.connection_details = datasource["connectionDetails"]
 
-    def update_credentials(self, username=None, password=None, token=None):
+    def update_credentials(self, username=None, password=None, token=None, pat=None):
         """Use the provided credentials to reauthenticate datasources connected to this dataset. If any of the provided credentials do not match the data source they will be skipped.
 
         Currently, only database credentials are supported using either SQL logins or oauth tokens.
@@ -36,6 +36,8 @@ class Datasource:
                 'name': 'accessToken',
                 'value': token.get_token()
             }]}
+        elif pat:
+            auth = 'Key'
         else:
             auth = 'Basic'
             credentials = {'credentialData': [{

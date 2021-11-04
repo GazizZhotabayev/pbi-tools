@@ -46,6 +46,7 @@ class Dataset:
             connection = json.loads(datasource.connection_details)
             server = connection.get('server')
             url = connection.get('url')
+            other = connection.get('extensionDataSourceKind')
 
             if server: # Server-based connections (e.g. Azure Data Warehouse)
                 if server in credentials:
@@ -71,6 +72,20 @@ class Dataset:
                         datasource.update_credentials(cred['username'], cred['password'])
                 else:
                     print(f'*** No credentials provided for {domain}. Using existing credentials.')
+
+            elif other == 'Databricks':
+                cluster = connection.get('extensionDataSourcePath')
+                cluster_hostname = cluster['host']
+
+                if cluster['host'] in credentials:
+                    print(f'*** Updating credentials for Databricks cluster {cluster_hostname}')
+                    cred = credentials.get(cluster['host'])
+
+                    if 'pat' in cred:
+                        datasource.update_credentials(pat=cred['pat'])
+
+                else:
+                    print(f'*** No credentials provided for Databricks cluster {cluster_hostname}. Using existing credentials.')
 
             else:
                 print(f'*** No credentials provided for {connection}. Using existing credentials.')
